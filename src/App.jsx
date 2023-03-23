@@ -2,26 +2,23 @@ import { useState, useRef } from "react";
 import reactLogo from "./assets/react.svg";
 import viteLogo from "/vite.svg";
 import "./App.css";
+import axios from "axios";
 
 import { useDispatch, useSelector } from "react-redux";
-import { addLayer, removeLastLayer } from "./store/slicers/layersSlice";
+import {
+  addLayer,
+  removeLastLayer,
+  setData,
+} from "./store/slicers/layersSlice";
 
 import Layer from "./components/Layer";
+const server = import.meta.env.VITE_SERVER;
 
 function App() {
-  // const [layers, setLayers] = useState([]);
-  // const createLayer = () => {
-  //   setLayers((layer) =>
-  //     layer.length == 0
-  //       ? [...layer, [1]]
-  //       : [...layer, [layer[layer.length - 1].length]]
-  //   );
-  // };
-  // const layers = useSelector((state) => state.layers);
-  const [file, setFile] = useState(null);
-  const [fileName, setFileName] = useState();
+  // const [file, setFile] = useState(null);
+  // const [fileName, setFileName] = useState();
   const inputRef = useRef();
-  const layers = useSelector((state) => state.layers);
+  const { layers, data } = useSelector((state) => state);
   const dispatch = useDispatch();
   const createLayer = () => {
     dispatch(addLayer());
@@ -34,14 +31,15 @@ function App() {
     if (event && event.target && event.target.files) {
       const f = event.target.files[0];
       const fileName = f.name;
-      // console.log(f);
+      console.log("df ", f);
       const reader = new FileReader();
       reader.onload = function (event) {
         if (event.target) {
           const data = event.target.result;
-          // console.log("event.target.result: ", data);
-          setFile(data);
-          setFileName(fileName);
+          console.log("event.target.result: ", data);
+          dispatch(setData({ name: fileName, file: data }));
+          // setFile(data);
+          // setFileName(fileName);
         } else {
           console.error("couldn't process");
         }
@@ -51,6 +49,17 @@ function App() {
     } else {
       console.error("couldn't process");
     }
+  };
+  const handleTrain = () => {
+    console.log({ layers, data });
+    axios
+      .post(server, { layers, data })
+      .then((res) => res.data)
+      .then((data) => console.log(data))
+      .catch((err) => {
+        // console.error(err);
+        console.error(err.response.data);
+      });
   };
 
   return (
@@ -70,10 +79,13 @@ function App() {
       >
         Remove the last layer
       </button>
+      <button className="mt-12 mr-5" onClick={handleTrain}>
+        Train
+      </button>
       <br />
-      {file ? (
+      {data ? (
         <div className="mt-5 p-10 border-solid border-2 border-black">
-          {fileName}
+          {data.name}
           <div className="flex flex-row justify-center">
             <p
               className="underline mr-2 cursor-pointer"
@@ -86,8 +98,8 @@ function App() {
             <p
               className="underline ml-2 cursor-pointer"
               onClick={() => {
-                setFile(null);
-                setFileName(null);
+                dispatch(setData(null));
+                inputRef.current.value = null;
               }}
             >
               remove
@@ -107,19 +119,19 @@ function App() {
           </p>
         </div>
       )}
-      <form>
-        <input
-          ref={inputRef}
-          className="mt-5"
-          type="file"
-          onChange={handleFileChange}
-          hidden
-        />
-      </form>
-      <div className="layers mt-12">
+      {/* <form> */}
+      <input
+        ref={inputRef}
+        className="mt-5"
+        type="file"
+        onChange={handleFileChange}
+        hidden
+      />
+      {/* </form> */}
+      <div className="layers mt-4">
         {layers.map((layer, i) => {
           return (
-            <div className="mt-4">
+            <div key={i} className="mt-4">
               <Layer index={i} />
             </div>
           );

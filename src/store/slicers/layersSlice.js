@@ -2,7 +2,10 @@ import { createSlice } from "@reduxjs/toolkit";
 
 export const layersSlice = createSlice({
   name: "layers",
-  initialState: { layers: [{ neurons: 25 }, { neurons: 5 }, { neurons: 5 }] },
+  initialState: {
+    layers: [{ neurons: 25 }, { neurons: 5 }, { neurons: 5 }],
+    data: null,
+  },
   reducers: {
     addLayer: (state) => {
       state.layers = [...state.layers, { neurons: 1 }];
@@ -11,7 +14,9 @@ export const layersSlice = createSlice({
       state.layers = state.layers.slice(0, state.layers.length - 1);
     },
     increaseNeurons: (state, action) => {
-      state.layers[action.payload.index].neurons += action.payload.value;
+      state.layers[action.payload.index].neurons =
+        Number(state.layers[action.payload.index].neurons) +
+        action.payload.value; // += doesn't work as state.layers[action.payload.index].neurons my by string
     },
     decreaseNeurons: (state, action) => {
       state.layers[action.payload.index].neurons -= action.payload.value;
@@ -23,6 +28,11 @@ export const layersSlice = createSlice({
         action.payload.value > 0 || action.payload.value == ""
           ? action.payload.value
           : 1;
+    },
+    setData: (state, action) => {
+      if (action.payload == null) state.data = null;
+      else
+        state.data = { name: action.payload.name, file: action.payload.file };
     },
     increment: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
@@ -46,6 +56,7 @@ export const {
   increaseNeurons,
   decreaseNeurons,
   setNeurons,
+  setData,
   increment,
   decrement,
   incrementByAmount,
