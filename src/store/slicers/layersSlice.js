@@ -5,6 +5,12 @@ export const layersSlice = createSlice({
   initialState: {
     layers: [{ neurons: 25 }, { neurons: 5 }, { neurons: 5 }],
     data: null,
+    params: {
+      "Number of embeddings": 10,
+      "Batch size": 32,
+      "Number of iterations": 1000,
+      "Block size": 3,
+    },
   },
   reducers: {
     addLayer: (state) => {
@@ -34,6 +40,12 @@ export const layersSlice = createSlice({
       else
         state.data = { name: action.payload.name, file: action.payload.file };
     },
+    setParams: (state, action) => {
+      state.params = {
+        ...state.params,
+        [action.payload.name]: action.payload.value,
+      };
+    },
     increment: (state) => {
       // Redux Toolkit allows us to write "mutating" logic in reducers. It
       // doesn't actually mutate the state because it uses the immer library,
@@ -57,6 +69,7 @@ export const {
   decreaseNeurons,
   setNeurons,
   setData,
+  setParams,
   increment,
   decrement,
   incrementByAmount,

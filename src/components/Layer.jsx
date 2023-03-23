@@ -12,19 +12,23 @@ function Layer({ index }) {
   const [inc, setInc] = useState(1);
   const dispatch = useDispatch();
   return (
-    <div className="border-solid border-2 border-black">
+    <div className="border-solid border-2 border-black rounded-lg">
       <h1 className="m-4">Layer {index + 1}</h1>
       <h3 className="mb-4">the number of neurons:</h3>
       <button
         className="mr-4"
         onClick={() =>
-          increaseNeurons(
-            dispatch(increaseNeurons({ index: index, value: Number(inc) }))
-          )
+          dispatch(decreaseNeurons({ index: index, value: Number(inc) }))
         }
-        // onClick={() => setNeurons((neurons) => Number(neurons) + Number(inc))}
+        // onClick={() =>
+        //   setNeurons((neurons) =>
+        //     Number(neurons) > 1 && Number(neurons) - Number(inc) > 0
+        //       ? Number(neurons) - Number(inc)
+        //       : 1
+        //   )
+        // }
       >
-        +
+        -
       </button>
       <input
         className="w-12 text-center h-10"
@@ -38,17 +42,13 @@ function Layer({ index }) {
       <button
         className="ml-4"
         onClick={() =>
-          dispatch(decreaseNeurons({ index: index, value: Number(inc) }))
+          increaseNeurons(
+            dispatch(increaseNeurons({ index: index, value: Number(inc) }))
+          )
         }
-        // onClick={() =>
-        //   setNeurons((neurons) =>
-        //     Number(neurons) > 1 && Number(neurons) - Number(inc) > 0
-        //       ? Number(neurons) - Number(inc)
-        //       : 1
-        //   )
-        // }
+        // onClick={() => setNeurons((neurons) => Number(neurons) + Number(inc))}
       >
-        -
+        +
       </button>
       <p className="mt-4 mb-4">
         increase by{" "}
